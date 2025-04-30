@@ -42,7 +42,9 @@ cd tessellator
 cmake --preset msbuild -S . -B build
 cmake --build build --config Release -j
 
-* Linux
+* Linux Ubuntu
+sudo apt-get update
+sudo apt-get install -y libvtk9-dev
 cd tessellator
 cmake --preset gnu -S . -B build
 cmake --build build --config Release -j
