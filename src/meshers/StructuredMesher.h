@@ -1,6 +1,8 @@
 #pragma once
 
 #include "types/Mesh.h"
+#include "types/Options.h"
+#include "types/Progress.h"
 #include "MesherBase.h"
 
 namespace meshlib::meshers {
