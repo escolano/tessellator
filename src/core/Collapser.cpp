@@ -108,14 +108,15 @@ void Collapser::collapseDegenerateElements(Mesh& mesh, const double& areaThresho
             if (element.isNode() || element.isLine()) {
                 continue;
             }
-
-            double area = Geometry::area(Geometry::asTriV(element, mesh.coordinates));
-            if (element.isTriangle() && area < areaThreshold) {
-                breaksPostCondition = true;
+            if (element.isTriangle()) {
+              double area=Geometry::area(Geometry::asTriV(element,mesh.coordinates));
+              if(area < areaThreshold) {
+                breaksPostCondition=true;
                 msg << std::endl;
                 msg << "Group: " << &group - &mesh.groups.front()
-                    << ", Element: " << &element - &group.elements.front() << std::endl;
-                msg << meshTools::info(element, mesh) << std::endl;
+                  << ", Element: " << &element - &group.elements.front() << std::endl;
+                msg << meshTools::info(element,mesh) << std::endl;
+              }
             }
         }
     }

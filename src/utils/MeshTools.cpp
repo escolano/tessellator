@@ -254,13 +254,14 @@ void checkNoNullAreasExist(const Mesh& m)
                         << ", Element: " << &e - &g.elements.front() << std::endl;
                     msg << info(e, m) << std::endl;
                 }
-            }
-            else if (Geometry::area(Geometry::asTriV(e, m.coordinates)) == 0.0) {
-                nullAreas = true;
+            } else if(e.isTriangle()) {
+              if(Geometry::area(Geometry::asTriV(e,m.coordinates)) == 0.0) {
+                nullAreas=true;
                 msg << std::endl;
                 msg << "Group: " << &g - &m.groups.front()
-                    << ", Element: " << &e - &g.elements.front() << std::endl;
-                msg << info(e, m) << std::endl;
+                  << ", Element: " << &e - &g.elements.front() << std::endl;
+                msg << info(e,m) << std::endl;
+              }
             }
         }
     }
