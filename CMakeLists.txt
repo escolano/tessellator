@@ -18,6 +18,9 @@ option(TESSELLATOR_EXECUTION_POLICIES OFF)
 if(TESSELLATOR_ENABLE_CGAL)
     list(APPEND VCPKG_MANIFEST_FEATURES "cgal")
 endif()
+
+cmake_policy(SET CMP0091 NEW)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 					  
 project(tessellator CXX)
 
