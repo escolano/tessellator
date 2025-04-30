@@ -17,6 +17,36 @@ Tessellator is a mesher focused on generate meshes and data structures which are
 
 ## Compilation
 
+How to build and test: 
+can have a look to comnmands "tessellator\.github\workflows\build-and-test.yml "
+
+0. install git : https://git-scm.com/downloads
+1- install cmake: https://cmake.org/ 
+
+2- install vcpkg
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg && bootstrap-vcpkg.bat
+
+Configure the VCPKG_ROOT environment variable (better do it permantent)
+set "VCPKG_ROOT=C:\path\to\vcpkg"
+set PATH=%VCPKG_ROOT%;%PATH%
+
+3- clone tessellator
+
+git clone https://github.com/OpenSEMBA/tessellator.git
+
+4- 
+* Windows Visual Studio: config: Release or Debug
+Warning: avoid clone it in a folder with spaces in the name of cmake will fail !!
+cd tessellator
+cmake --preset msbuild -S . -B build
+cmake --build build --config Release -j
+
+* Linux
+cd tessellator
+cmake --preset gnu -S . -B build
+cmake --build build --config Release -j
+
 When using presets, make sure to define the environment variable `VCPKG_ROOT` to your `vcpkg` installation.
 This can be done using a `CMakeUserPreset.json` file, for example:
 
