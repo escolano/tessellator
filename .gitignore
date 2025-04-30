@@ -26,3 +26,4 @@ sliced.vtk
 contour.vtk
 
 testData/
+vcpkg_installed/
