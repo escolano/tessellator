@@ -16,6 +16,8 @@
 
 #include <vtkUnstructuredGridWriter.h>
 
+#include <vtkNew.h>
+
 const char* GROUPS_TAG_NAME = "group";
 
 namespace meshlib::vtkIO
@@ -124,23 +126,24 @@ Mesh vtuToMesh(vtkUnstructuredGrid* vtu)
 vtkSmartPointer<vtkPoints> toVTKPoints(const std::vector<Coordinate>& coordinates)
 {
     vtkNew<vtkPoints> points;
+    
     points->Allocate(coordinates.size());
     for (const auto& coord : coordinates) {
         points->InsertNextPoint(coord[0], coord[1], coord[2]);
     }
-    return points;
+    return points.GetPointer();
 }   
 
 vtkSmartPointer<vtkIntArray> toVTKGroupsArray(const Mesh& mesh)
 {
     vtkNew<vtkIntArray> groupsDataArray;
-    for (auto g = 0; g < mesh.groups.size(); g++) {
-        for (auto e = 0; e < mesh.groups[g].elements.size(); e++) {
+    for (size_t g = 0; g < mesh.groups.size(); g++) {
+        for (size_t e = 0; e < mesh.groups[g].elements.size(); e++) {
             groupsDataArray->InsertNextValue( int(g) );
         }
     }
     groupsDataArray->SetName(GROUPS_TAG_NAME);
-    return groupsDataArray;
+    return groupsDataArray.GetPointer();
 }
 
 vtkSmartPointer<vtkUnstructuredGrid> elementsToVTU(const Mesh& mesh)
@@ -180,9 +183,9 @@ vtkSmartPointer<vtkUnstructuredGrid> elementsToVTU(const Mesh& mesh)
         }
     }
 
-    vtu->SetCells(cellTypes.data(), vtkCells);
+    vtu->SetCells(cellTypes.data(), vtkCells.GetPointer());
 
-    return vtu;
+    return vtu.GetPointer();
 }
 
 vtkSmartPointer<vtkUnstructuredGrid> gridToVTU(const Grid& grid)
@@ -217,13 +220,13 @@ vtkSmartPointer<vtkUnstructuredGrid> gridToVTU(const Grid& grid)
             for (auto i = 0; i < 4; i++) {
                 quad->GetPointIds()->SetId(i, ids[i]);
             }
-            vtkCells->InsertNextCell(quad);
+            vtkCells->InsertNextCell(quad.GetPointer());
         }
     }
-    vtu->SetPoints(points);
-    vtu->SetCells(VTK_QUAD, vtkCells);
+    vtu->SetPoints(points.GetPointer());
+    vtu->SetCells(VTK_QUAD, vtkCells.GetPointer());
 
-    return vtu;
+    return vtu.GetPointer();
 }
 
 std::string getBasename(const std::filesystem::path& fn)
