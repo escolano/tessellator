@@ -11,7 +11,7 @@ public:
     virtual void newSection(const std::string& ) {}
     virtual void endSection() {}
     virtual void newTask(const std::string&, const std::size_t&) {}
-    virtual void advanceTask(const std::size_t& = 1) {}
+    virtual bool advanceTask(const std::size_t & =1) { return false; }
     virtual void endTask() {};
 
 private:
@@ -52,8 +52,8 @@ public:
     void newTask(const std::string& name, const std::size_t& size) const {
         progress_->newTask(name, size);
     };
-    void advanceTask(const std::size_t& size = 1) const {
-        progress_->advanceTask(size);
+    bool advanceTask(const std::size_t& size = 1) const {
+        return progress_->advanceTask(size);
     };
     void endTask() const {
         progress_->endTask();

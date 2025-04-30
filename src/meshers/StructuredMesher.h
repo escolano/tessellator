@@ -9,18 +9,16 @@ namespace meshlib::meshers {
 
 class StructuredMesher : public MesherBase {
 public:
-	StructuredMesher(const Mesh& in, int decimalPlacesInCollapser = 4);
+	StructuredMesher(const Mesh& in,const Options& options);
 	virtual ~StructuredMesher() = default;
 	Mesh mesh() const;
-
 private:
-	int decimalPlacesInCollapser_;
 
 	Mesh surfaceMesh_;
 
 	virtual Mesh buildSurfaceMesh(const Mesh& inputMesh, const Mesh& volumeSurface);
 	void process(Mesh&) const;
-
+	Options opts_;
 };
 
 }

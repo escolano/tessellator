@@ -11,9 +11,10 @@ namespace meshlib {
 
 struct Options {
     ProgressManager progress;
-
-    Options()
-    {}
+    int decimalPlacesInCollapser;
+    Options() {
+      decimalPlacesInCollapser=4;
+    }
 };
 
 }
