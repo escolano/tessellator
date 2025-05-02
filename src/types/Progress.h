@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace meshlib {
 
@@ -8,15 +9,15 @@ class Progress {
 public:
     Progress() {}
     virtual ~Progress() {}
-    virtual void newSection(const std::string& ) {}
+    virtual void setSections(const std::vector<double>& /*section_weights*/){}
+    virtual void newSection(const std::string&,const int /*section_num_tasks*/=0) {}
     virtual void endSection() {}
-    virtual void newTask(const std::string&, const std::size_t&) {}
-    virtual bool advanceTask(const std::size_t & =1) { return false; }
-    virtual void endTask() {};
+    virtual void newTask(const std::string&,const size_t /*task_num_steps*/=1) {}
+    virtual bool advanceTask() { return false; }
+    virtual bool endTask() { return false; }
 
 private:
     Progress(const Progress&);
-    Progress& operator=(const Progress&);
 };
 
 class ProgressManager {
@@ -43,20 +44,23 @@ public:
     operator Progress&() const {
         return *progress_;
     }
-    void newSection(const std::string& name) const {
-        progress_->newSection(name);
+    void setSections(const std::vector<double>& section_weights){
+        progress_->setSections(section_weights);
+    }
+    void newSection(const std::string& name,const int section_num_tasks=0) const {
+        progress_->newSection(name,section_num_tasks);
     };
     void endSection() const {
         progress_->endSection();
     };
-    void newTask(const std::string& name, const std::size_t& size) const {
-        progress_->newTask(name, size);
+    void newTask(const std::string& name,const size_t task_num_steps=1) const {
+        progress_->newTask(name,task_num_steps);
     };
-    bool advanceTask(const std::size_t& size = 1) const {
-        return progress_->advanceTask(size);
+    bool advanceTask() const {
+        return progress_->advanceTask();
     };
-    void endTask() const {
-        progress_->endTask();
+    bool endTask() const {
+        return progress_->endTask();
     };
 private:
     bool assign_;
