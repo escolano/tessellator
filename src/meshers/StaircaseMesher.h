@@ -7,10 +7,10 @@
 
 namespace meshlib::meshers {
 
-class StructuredMesher : public MesherBase {
+class StaircaseMesher : public MesherBase {
 public:
-	StructuredMesher(const Mesh& in,const Options& options);
-	virtual ~StructuredMesher() = default;
+	StaircaseMesher(const Mesh& in, int decimalPlacesInCollapser = 4);
+	virtual ~StaircaseMesher() = default;
 	Mesh mesh() const;
 private:
 

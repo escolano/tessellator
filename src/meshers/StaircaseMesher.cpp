@@ -1,4 +1,4 @@
-#include "StructuredMesher.h"
+#include "StaircaseMesher.h"
 
 #include <iostream>
 
@@ -17,9 +17,10 @@ using namespace utils;
 using namespace core;
 using namespace meshTools;
 
-StructuredMesher::StructuredMesher(const Mesh& inputMesh,const Options& options) :
-    MesherBase(inputMesh),opts_(options)
+StaircaseMesher::StaircaseMesher(const Mesh& inputMesh,int decimalPlacesInCollapser) :
+  MesherBase(inputMesh)
 {
+    opts_.decimalPlacesInCollapser=decimalPlacesInCollapser;
     opts_.progress.setSections({0.05,0.95});//weights must sum 1.0 and must match the amount of newSection/endSection of this algorithm
     log("Preparing surfaces.");
     opts_.progress.newSection("Preparing surfaces.",0);
@@ -32,14 +33,14 @@ StructuredMesher::StructuredMesher(const Mesh& inputMesh,const Options& options)
     log("Surface mesh built succesfully.", 1);
 }
 
-Mesh StructuredMesher::buildSurfaceMesh(const Mesh& inputMesh, const Mesh & volumeSurface)
+Mesh StaircaseMesher::buildSurfaceMesh(const Mesh& inputMesh, const Mesh & volumeSurface)
 {
     auto resultMesh = buildMeshFilteringElements(inputMesh, isNotTetrahedron);
     mergeMesh(resultMesh, volumeSurface);
     return resultMesh;
 }
 
-void StructuredMesher::process(Mesh& mesh) const
+void StaircaseMesher::process(Mesh& mesh) const
 {
     
     const auto slicingGrid{ buildSlicingGrid(originalGrid_, enlargedGrid_) };
@@ -49,19 +50,16 @@ void StructuredMesher::process(Mesh& mesh) const
         return;
     }
 
+    auto dimensions = getHighestDimensionByGroup(mesh);
+
     log("Slicing.", 1);
-    opts_.progress.newTask("Slicing.");
-    mesh.grid=slicingGrid;
-    opts_.progress.endTask();
-    
-    mesh = Slicer{ mesh }.getMesh();
+    mesh.grid = slicingGrid;
+    mesh = Slicer{ mesh, dimensions }.getMesh();
     
     logNumberOfTriangles(countMeshElementsIf(mesh, isTriangle));
 
     log("Collapsing.", 1);
-    opts_.progress.newTask("Collapsing.");
-    mesh = Collapser(mesh,opts_.decimalPlacesInCollapser).getMesh();
-    opts_.progress.endTask();
+    mesh = Collapser(mesh,opts_.decimalPlacesInCollapser, dimensions).getMesh();
 
     logNumberOfTriangles(countMeshElementsIf(mesh, isTriangle));
     
@@ -73,10 +71,8 @@ void StructuredMesher::process(Mesh& mesh) const
     logNumberOfQuads(countMeshElementsIf(mesh, isQuad));
     logNumberOfLines(countMeshElementsIf(mesh, isLine));
 
-    log("Removing repeated and overlapping elements.", 1);
-    opts_.progress.newTask("Removing repeated and overlapping elements.");
-    RedundancyCleaner::removeOverlappedDimensionOneAndLowerElementsAndEquivalentSurfaces(mesh);
-    opts_.progress.endTask();
+    log("Removing repeated and overlapping elements.", 1);   
+    RedundancyCleaner::removeOverlappedElementsByDimension(mesh, dimensions);
 
     logNumberOfQuads(countMeshElementsIf(mesh, isQuad));
     logNumberOfLines(countMeshElementsIf(mesh, isLine));
@@ -97,7 +93,7 @@ void StructuredMesher::process(Mesh& mesh) const
 }
 
 
-Mesh StructuredMesher::mesh() const
+Mesh StaircaseMesher::mesh() const
 {
     return surfaceMesh_;
 }
